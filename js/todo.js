@@ -12,13 +12,17 @@ const saveTodos = () => {
 const deleteTodo = e => {
   const li = e.target.parentElement;
   li.remove();
+
+  const filteredTodo = todos.filter(todo => todo.id !== parseInt(li.id, 10));
+  localStorage.setItem(TODOS_KEY, JSON.stringify(filteredTodo));
 };
 
 const paintTodo = newTodo => {
   const li = document.createElement('li');
+  li.id = newTodo.id;
 
   const span = document.createElement('span');
-  span.innerText = newTodo;
+  span.innerText = newTodo.text;
 
   const button = document.createElement('button');
   button.innerText = '❌';
@@ -33,10 +37,17 @@ const paintTodo = newTodo => {
 const handleTodoSubmit = e => {
   e.preventDefault();
 
-  const newTodo = todoInput.value;
+  const inputValue = todoInput.value;
   todoInput.value = '';
+
+  const newTodo = {
+    id: Date.now(),
+    text: inputValue,
+  };
+
   todos.push(newTodo);
   paintTodo(newTodo);
+
   saveTodos();
 };
 
@@ -47,5 +58,6 @@ const savedTodos = localStorage.getItem(TODOS_KEY);
 if (savedTodos) {
   const parsedTodo = JSON.parse(savedTodos);
   todos = parsedTodo;
+
   parsedTodo.forEach(paintTodo);
 }
